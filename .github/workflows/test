@@ -1,0 +1,52 @@
+`timescale 1ns / 1ps
+module test ();
+
+parameter CLK_PERIOD = 2;
+
+reg clk;
+reg reset;
+reg [3:0]ubdata;
+reg [3:0]ubcredential;
+wire [3:0]ubcounter;
+wire led;
+
+
+always #(CLK_PERIOD) clk = ~clk;
+
+Top T(
+	.clk								(clk), 
+	.reset								(reset), 
+	.ubdata								(ubdata),
+	.ubcredential							(ubcredential),
+	.led									(led),
+	.ubcounter								(ubcounter)
+);
+initial
+begin
+	#2 clk = 1'b0;
+	#2 reset = 1'b1;
+	#2 reset = 1'b0;
+	#2 reset = 1'b1;
+	
+	#2 ubdata = 4'd4;
+		ubcredential = 4'd2;
+	#2 reset = 1'b1;
+	#2 reset = 1'b0;
+	#2 reset = 1'b1;
+	#2000;
+	
+	#2 ubdata = 4'd2;
+	 ubcredential = 4'd4;
+	
+	#2000;
+	
+	
+	#2 ubdata = 4'd1;
+	 ubcredential = 4'd1;
+	
+	#2000;
+	$display("Fin de simulación");
+	$stop;
+end
+
+endmodule
