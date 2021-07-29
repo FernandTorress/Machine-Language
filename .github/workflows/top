@@ -1,0 +1,44 @@
+module Top(
+input  clk,
+input  reset,
+input [3:0]ubdata, 
+input[3:0]ubcredential,
+
+output[3:0] ubcounter,
+output led
+
+);
+
+
+wire carry_flag, zero_flag, sign_flag, overflow_flag, paridad_flag;
+wire[3:0]resultado;
+wire[3:0]dataA; 
+wire[3:0]dataB;
+wire[3:0]opcode;
+
+alu ALU(
+.dataA (dataA),
+.dataB (dataB),
+.opcode (opcode),
+.result (resultado),
+.zero_flag (zero_flag),
+.sign_flag (sign_flag)
+);
+
+unidadControl UC(
+.clk (clk),
+.reset (reset),
+.resultado (resultado),
+.ubdata (ubdata), 
+.ubcredential (ubcredential),
+.dataA (dataA), 
+.dataB (dataB),
+.opcode (opcode), 
+.ubcounter (ubcounter),
+.led (led),
+.zero_flag (zero_flag),
+.sign_flag (sign_flag)
+
+);
+
+endmodule
