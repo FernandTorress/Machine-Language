@@ -1,0 +1,76 @@
+module unidadControl(
+input clk, reset,carry_flag, zero_flag, sign_flag, overflow_flag, paridad_flag,
+input [3:0]resultado,
+input [3:0]ubdata,
+input [3:0]ubcredential,
+output reg[3:0]dataA, 
+output reg[3:0]dataB,
+output reg [3:0]opcode, 
+output reg [3:0] ubcounter,
+output reg led
+);
+
+
+reg [16:0]program_c;
+
+always @(posedge clk or negedge reset)
+begin
+	if(!reset)
+		begin
+			program_c = 0;
+			ubcounter = 4'd2;
+			led = 0;
+		end
+	else
+	begin
+	
+	case(program_c)
+	16'd0:
+	begin
+		program_c = program_c + 16'd1;
+	end
+	16'd1:
+	begin
+		dataA = ubdata;
+		dataB = ubcredential;
+		opcode = 4'd1;
+		program_c = program_c + 16'd1;
+		//ubdata - ubcredential;
+	end
+	16'd2:
+	begin
+		if(sign_flag)
+		program_c = 16'd3;
+		else if(zero_flag)
+		program_c = 16'd4;
+		else
+			program_c = 16'd5;
+	end
+	16'd3:
+	begin
+		dataA = ubcounter;
+		dataB = 4'd1;
+		opcode = 4'd0;
+		program_c = 16'd6;
+	end
+	16'd4:
+	begin
+		led = 1'd1;
+		program_c = 16'd1;
+	end
+	16'd5:
+	begin
+		dataA = ubcounter;
+		dataB = 4'd1;
+		opcode = 4'd1;
+		program_c = 16'd6;
+	end
+	16'd6:
+	begin
+		ubcounter = resultado;
+		program_c = 16'd1;
+	end
+	endcase
+	end
+end
+endmodule
