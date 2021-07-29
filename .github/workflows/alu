@@ -1,0 +1,71 @@
+module alu
+#(parameter DATA_A = 4, parameter DATA_B = 4, parameter RESULT_P = 4)
+(
+input  [(DATA_A-1):0] dataA,
+input [(DATA_B-1):0] dataB,
+input [3:0] opcode,
+output [(RESULT_P-1):0] result,
+output carry_flag, zero_flag, sign_flag, overflow_flag, paridad_flag
+
+);
+
+reg [4:0] resultado_temp;
+
+assign zero_flag = (resultado_temp == {5{1'b0}})? 1'b1:1'b0;
+assign carry_flag = (resultado_temp[4] == 1)? 1'b1:1'b0;
+assign sign_flag = resultado_temp[3];
+assign overflow_flag = resultado_temp[3];
+assign paridad_flag = ~^resultado_temp[3:0];
+assign result = resultado_temp[3:0];
+
+
+always @(*)
+begin
+resultado_temp = 0;
+case(opcode)
+4'b0000:begin
+resultado_temp = dataA + dataB; // sum
+end
+4'b0001:begin
+resultado_temp = dataA - dataB; //Subtraction
+end
+4'b0010:begin
+resultado_temp = dataA & dataB; //And
+end
+4'b0011:begin
+resultado_temp = dataA | dataB; //Or
+end
+4'b0100:begin
+resultado_temp = ~dataA; //Not  
+end
+4'b0101:begin
+resultado_temp = dataA ^ dataB; //Xor
+end
+4'b0110:begin
+resultado_temp = ~dataA; //1’s complement 
+end
+4'b0111:begin
+resultado_temp = ~dataA + 4'd1; //2’s complement 
+end
+4'b1000:begin
+resultado_temp = dataA <<< dataB; //Arithmetic shift left 
+end
+4'b1001:begin
+resultado_temp = {dataA[3],dataB[3:1]};//Arithmetic shift right
+end
+4'b1010:begin
+resultado_temp = dataA >> 1'b1; //Logical shift left 
+end
+4'b1011:begin
+resultado_temp = dataA << 1'b1; //Logical shift right//
+end
+4'b1100:begin
+resultado_temp = {dataA[2:0], dataB[3]}; //Rotation left 
+end
+4'b1101:begin
+resultado_temp = {dataA[0],dataB[3:1]}; //Rotation right 
+end
+endcase
+end
+endmodule
+
